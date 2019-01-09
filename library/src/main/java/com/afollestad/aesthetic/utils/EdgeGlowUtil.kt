@@ -1,18 +1,33 @@
+/**
+ * Designed and developed by Aidan Follestad (@afollestad)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.afollestad.aesthetic.utils
 
 import android.annotation.TargetApi
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.support.annotation.ColorInt
-import android.support.v4.view.ViewPager
-import android.support.v4.widget.EdgeEffectCompat
-import android.support.v4.widget.NestedScrollView
-import android.support.v7.widget.RecyclerView
 import android.widget.AbsListView
 import android.widget.EdgeEffect
 import android.widget.ScrollView
-import com.afollestad.aesthetic.BuildConfig
+import androidx.annotation.ColorInt
+import androidx.core.widget.EdgeEffectCompat
+import androidx.core.widget.NestedScrollView
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
+import com.afollestad.aesthetic.BuildConfig.DEBUG
 import java.lang.reflect.Field
 
 /** @author Aidan Follestad (afollestad) */
@@ -35,9 +50,9 @@ internal object EdgeGlowUtil {
   private var VIEW_PAGER_FIELD_EDGE_GLOW_RIGHT: Field? = null
 
   private fun invalidateEdgeEffectFields() {
-    if (EDGE_GLOW_FIELD_EDGE != null
-        && EDGE_GLOW_FIELD_GLOW != null
-        && EDGE_EFFECT_COMPAT_FIELD_EDGE_EFFECT != null
+    if (EDGE_GLOW_FIELD_EDGE != null &&
+        EDGE_GLOW_FIELD_GLOW != null &&
+        EDGE_EFFECT_COMPAT_FIELD_EDGE_EFFECT != null
     ) {
       EDGE_GLOW_FIELD_EDGE!!.isAccessible = true
       EDGE_GLOW_FIELD_GLOW!!.isAccessible = true
@@ -68,9 +83,9 @@ internal object EdgeGlowUtil {
 
     var efc: Field? = null
     try {
-      efc = EdgeEffectCompat::class.java.getDeclaredField("mEdgeEffect")
+      efc = EdgeEffectCompat::class.findField("mEdgeEffect")
     } catch (e: NoSuchFieldException) {
-      if (BuildConfig.DEBUG) e.printStackTrace()
+      if (DEBUG) e.printStackTrace()
     }
 
     EDGE_EFFECT_COMPAT_FIELD_EDGE_EFFECT = efc
@@ -140,10 +155,10 @@ internal object EdgeGlowUtil {
   }
 
   private fun invalidateRecyclerViewFields() {
-    if (RECYCLER_VIEW_FIELD_EDGE_GLOW_TOP != null
-        && RECYCLER_VIEW_FIELD_EDGE_GLOW_LEFT != null
-        && RECYCLER_VIEW_FIELD_EDGE_GLOW_RIGHT != null
-        && RECYCLER_VIEW_FIELD_EDGE_GLOW_BOTTOM != null
+    if (RECYCLER_VIEW_FIELD_EDGE_GLOW_TOP != null &&
+        RECYCLER_VIEW_FIELD_EDGE_GLOW_LEFT != null &&
+        RECYCLER_VIEW_FIELD_EDGE_GLOW_RIGHT != null &&
+        RECYCLER_VIEW_FIELD_EDGE_GLOW_BOTTOM != null
     ) {
       RECYCLER_VIEW_FIELD_EDGE_GLOW_TOP!!.isAccessible = true
       RECYCLER_VIEW_FIELD_EDGE_GLOW_LEFT!!.isAccessible = true
@@ -205,9 +220,8 @@ internal object EdgeGlowUtil {
       ee = SCROLL_VIEW_FIELD_EDGE_GLOW_BOTTOM!!.get(scrollView)
       setEffectColor(ee, color)
     } catch (ex: Exception) {
-      if (BuildConfig.DEBUG) ex.printStackTrace()
+      if (DEBUG) ex.printStackTrace()
     }
-
   }
 
   fun setEdgeGlowColor(scrollView: NestedScrollView, @ColorInt color: Int) {
@@ -218,9 +232,8 @@ internal object EdgeGlowUtil {
       ee = NESTED_SCROLL_VIEW_FIELD_EDGE_GLOW_BOTTOM!!.get(scrollView)
       setEffectColor(ee, color)
     } catch (ex: Exception) {
-      if (BuildConfig.DEBUG) ex.printStackTrace()
+      if (DEBUG) ex.printStackTrace()
     }
-
   }
 
   fun setEdgeGlowColor(listView: AbsListView, @ColorInt color: Int) {
@@ -231,9 +244,8 @@ internal object EdgeGlowUtil {
       ee = LIST_VIEW_FIELD_EDGE_GLOW_BOTTOM!!.get(listView)
       setEffectColor(ee, color)
     } catch (ex: Exception) {
-      if (BuildConfig.DEBUG) ex.printStackTrace()
+      if (DEBUG) ex.printStackTrace()
     }
-
   }
 
   fun setEdgeGlowColor(
@@ -266,9 +278,8 @@ internal object EdgeGlowUtil {
       ee = RECYCLER_VIEW_FIELD_EDGE_GLOW_RIGHT!!.get(scrollView)
       setEffectColor(ee, color)
     } catch (ex: Exception) {
-      if (BuildConfig.DEBUG) ex.printStackTrace()
+      if (DEBUG) ex.printStackTrace()
     }
-
   }
 
   fun setEdgeGlowColor(pager: ViewPager, @ColorInt color: Int) {
@@ -279,9 +290,8 @@ internal object EdgeGlowUtil {
       ee = VIEW_PAGER_FIELD_EDGE_GLOW_RIGHT!!.get(pager)
       setEffectColor(ee, color)
     } catch (ex: Exception) {
-      if (BuildConfig.DEBUG) ex.printStackTrace()
+      if (DEBUG) ex.printStackTrace()
     }
-
   }
 
   // Utilities
@@ -296,10 +306,9 @@ internal object EdgeGlowUtil {
         EDGE_EFFECT_COMPAT_FIELD_EDGE_EFFECT!!.isAccessible = true
         edgeEffect = EDGE_EFFECT_COMPAT_FIELD_EDGE_EFFECT!!.get(edgeEffect)
       } catch (e: IllegalAccessException) {
-        e.printStackTrace()
+        if (DEBUG) e.printStackTrace()
         return
       }
-
     }
     if (edgeEffect == null) {
       return
@@ -316,9 +325,8 @@ internal object EdgeGlowUtil {
         mEdge.callback = null // free up any references
         mGlow.callback = null // free up any references
       } catch (ex: Exception) {
-        ex.printStackTrace()
+        if (DEBUG) ex.printStackTrace()
       }
-
     } else {
       // EdgeEffect
       (edgeEffect as EdgeEffect).color = color

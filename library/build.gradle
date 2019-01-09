@@ -1,17 +1,13 @@
+apply from: '../dependencies.gradle'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.novoda.bintray-release'
-apply from: '../dependencies.gradle'
+
+apply from: '../bintrayconfig.gradle'
 
 android {
   compileSdkVersion versions.compileSdk
   buildToolsVersion versions.buildTools
-
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-  }
 
   defaultConfig {
     minSdkVersion versions.minSdk
@@ -19,49 +15,40 @@ android {
     versionCode versions.publishVersionCode
     versionName versions.publishVersion
   }
-  buildTypes {
-    release {
-      minifyEnabled false
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-    }
-  }
+
   sourceSets {
     main.res.srcDirs = [
         'src/main/res',
         'src/main/res-public'
     ]
   }
+
+  compileOptions {
+    kotlinOptions.freeCompilerArgs += ['-module-name', "com.afollestad.aesthetic"]
+  }
+
+  packagingOptions {
+    pickFirst 'META-INF/proguard/androidx-annotations.pro'
+  }
+}
+
+repositories {
+  google()
+  jcenter()
 }
 
 dependencies {
-  repositories {
-    google()
-  }
+  api 'androidx.appcompat:appcompat:' + versions.androidx
 
-  implementation 'com.android.support:appcompat-v7:' + versions.supportLib
-  implementation 'com.android.support:cardview-v7:' + versions.supportLib
-  implementation 'com.android.support:support-compat:' + versions.supportLib
-
-  implementation 'com.android.support:design:' + versions.supportLib
-  implementation 'com.android.support:recyclerview-v7:' + versions.supportLib
-  implementation 'com.android.support:support-v13:' + versions.supportLib
+  implementation 'androidx.cardview:cardview:' + versions.androidx
+  implementation 'androidx.recyclerview:recyclerview:' + versions.androidx
+  implementation 'com.google.android.material:material:' + versions.androidx
 
   implementation 'io.reactivex.rxjava2:rxjava:' + versions.rxJava
   implementation 'io.reactivex.rxjava2:rxandroid:' + versions.rxAndroid
-  implementation 'com.f2prateek.rx.preferences2:rx-preferences:' + versions.rxPrefs
+  implementation 'com.afollestad:rxkprefs:' + versions.rxkPrefs
 
   implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:' + versions.kotlin
 }
 
-publish {
-  userOrg = 'drummer-aidan'
-  groupId = 'com.afollestad'
-  artifactId = 'aesthetic'
-  publishVersion = versions.publishVersion
-  website = 'https://github.com/afollestad/aesthetic'
-  desc =
-      'A fast and easy to use plug-and-play dynamic theme engine. Powered by Rx, for Android apps.'
-}
-repositories {
-  mavenCentral()
-}
+apply from: '../spotless.gradle'
